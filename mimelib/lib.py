@@ -28,8 +28,7 @@ class Mime(object):
 
         if data_type not in self.ALLOWED_DATA_TYPES:
             raise Exception(
-                "Invalid value for data_type: {}".format(data_type)
-            )
+                "Invalid value for data_type: {}".format(data_type))
 
         self.mime_type = None
 
@@ -54,23 +53,38 @@ class Mime(object):
 
     def __get_file_type(self):
         # check if this the MIME type is recognized
-        if not (self.mime_type and
-                mimetypes.guess_extension(self.mime_type, strict=False)):
+        if not (self.mime_type
+                and mimetypes.guess_extension(self.mime_type, strict=False)):
             return ''
+
+        # check it's an html file
+        if self.mime_type in known.HTML_MIME_TYPES:
+            return "html"
 
         # check if it's an image
         if self.mime_type.startswith("image/"):
             return "image"
 
+        # check it's a pdf file
+        if self.mime_type in known.PDF_MIME_TYPES:
+            return "pdf"
+
+        # check it's a archive file
+        if self.mime_type in known.ARCHIVE_MIME_TYPES:
+            return "archive"
+
         # check it's a text file
-        if (self.mime_type.startswith("text/") or
-                self.mime_type in known.TEXT_MIME_TYPES):
+        if (self.mime_type.startswith("text/")
+                or self.mime_type in known.TEXT_MIME_TYPES):
             return "text"
 
         # check if it's a media file
-        if (self.mime_type.startswith("audio/") or
-                self.mime_type.startswith("video/")):
-            return "media"
+        if self.mime_type.startswith("audio/"):
+            return "audio"
+
+        # check if it's a media file
+        if self.mime_type.startswith("video/"):
+            return "video"
 
         # finally, since the MIME type has been checked for validity,
         # it can be considered binary if nothing else matches.
@@ -93,10 +107,40 @@ class Mime(object):
     def is_media(self):
         """Returns True if the given URL or MIME type can be safely considered
         an audio or video."""
-        return self.file_type == "media"
+        return self.file_type == "audio" or self.file_type == "video"
 
     @property
     def is_binary(self):
         """Returns True if the given URL or MIME type can be considered
         an application binary."""
         return self.file_type == "binary"
+
+    @property
+    def is_pdf(self):
+        """Returns True if the given URL or MIME type can be safely considered
+        a pdf."""
+        return self.file_type == "pdf"
+
+    @property
+    def is_archive(self):
+        """Returns True if the given URL or MIME type can be safely considered
+        an archive."""
+        return self.file_type == "archive"
+
+    @property
+    def is_html(self):
+        """Returns True if the given URL or MIME type can be safely considered
+        as html."""
+        return self.file_type == "html"
+
+    @property
+    def is_audio(self):
+        """Returns True if the given URL or MIME type can be safely considered
+        as audio."""
+        return self.file_type == "audio"
+
+    @property
+    def is_videio(self):
+        """Returns True if the given URL or MIME type can be safely considered
+        as video."""
+        return self.file_type == "video"
